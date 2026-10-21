@@ -13,6 +13,24 @@ test('each last pick gets exactly 10 percent and others get 30', () => {
   }
 });
 
+test('custom last-pick chances control selection and wheel sizes', () => {
+  for (const last of roles) {
+    for (const chance of [0, 10, 25, 50]) {
+      const weights = weightsFor(last, chance);
+      assert.equal(weights[roles.indexOf(last)], chance);
+      assert.ok(Math.abs(weights.reduce((sum, weight) => sum + weight, 0) - 100) < 1e-9);
+      const sectors = sectorsFor(last, chance);
+      for (const [i, sector] of sectors.entries()) {
+        assert.ok(Math.abs(sector.end - sector.start - weights[i] * 3.6) < 1e-9);
+        if (weights[i] > 0) assert.equal(chooseRole(last, sector.center / 360, chance), sector.role);
+      }
+      const picks = Array.from({length: 600}, (_, i) => chooseRole(last, (i + .5) / 600, chance));
+      assert.equal(picks.filter(role => role === last).length, chance * 6);
+    }
+  }
+  assert.deepEqual(weightsFor(null, 50), [25, 25, 25, 25]);
+});
+
 test('wheel sections match the odds and contain the matching selections', () => {
   for (const last of [null, ...roles]) {
     const sectors = sectorsFor(last);

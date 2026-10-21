@@ -72,7 +72,7 @@ function App() {
             <button className={'wheel ' + (spinning ? 'is-spinning' : '')} onClick={spin} disabled={spinning} aria-label={spinning ? 'Choosing your role' : 'Spin the role roulette'}>
               <div className="wheel-face" style={{background: wheelBackground}}/>
               {sectors.map(sector => <div key={sector.role} className="wheel-divider" style={{transform: `rotate(${sector.start}deg)`}}/>)}
-              {roles.map((role, i) => <div key={role} className="wheel-label" style={{left: `${50 + 33 * Math.sin(sectors[i].center * Math.PI / 180)}%`, top: `${50 - 33 * Math.cos(sectors[i].center * Math.PI / 180)}%`}}><span><RoleIcon index={i}/></span><strong>{role}</strong></div>)}
+              {roles.map((role, i) => <div key={role} className="wheel-label" style={{left: `${50 + 33 * Math.sin(sectors[i].center * Math.PI / 180)}%`, top: `${50 - 33 * Math.cos(sectors[i].center * Math.PI / 180)}%`}}><span><RoleIcon index={i}/></span><strong>{role === 'JUNGLE' ? 'JGL' : role}</strong></div>)}
               <div className="needle" style={{transform:`rotate(${rotation}deg)`}}><div className="needle-shaft"/></div>
               <div className="hub"><span>{spinning ? '•••' : <SpecialistIcon/>}</span></div>
             </button>

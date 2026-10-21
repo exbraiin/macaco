@@ -17,6 +17,15 @@ function SpecialistIcon() {
   return <img className="specialist-icon" src={specialistIcon} alt="" aria-hidden="true"/>;
 }
 const historyKey = 'role-roulette.history';
+const chanceKey = 'role-roulette.lastChance';
+function loadLastChance() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(chanceKey) ?? 'null');
+    return Number.isInteger(saved) && saved >= 0 && saved <= 50 ? saved : 10;
+  } catch {
+    return 10;
+  }
+}
 function loadHistory() {
   try {
     const saved = JSON.parse(localStorage.getItem(historyKey) || '[]');
@@ -29,8 +38,15 @@ function App() {
   const [history, setHistory] = useState(loadHistory);
   const last = history[0] ?? null;
   const [spinning, setSpinning] = useState(false);
-  const [lastChance, setLastChance] = useState(10);
-  const [rotation, setRotation] = useState(() => last ? sectorsFor(last).find(sector => sector.role === last).center : 0);
+  const [lastChance, setLastChance] = useState(loadLastChance);
+  const [rotation, setRotation] = useState(() => last ? sectorsFor(last, lastChance).find(sector => sector.role === last).center : 0);
+  useEffect(() => {
+    try {
+      localStorage.setItem(chanceKey, JSON.stringify(lastChance));
+    } catch {
+      // Keep the slider usable if browser storage is unavailable.
+    }
+  }, [lastChance]);
   useEffect(() => {
     try {
       if (history.length) localStorage.setItem(historyKey, JSON.stringify(history));
